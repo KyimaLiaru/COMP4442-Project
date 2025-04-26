@@ -1,10 +1,9 @@
 html, body {
     height: 100%;
-    margin: 0;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
 }
+
 .main-content {
     flex: 1;
     display: flex;
@@ -13,36 +12,69 @@ html, body {
     align-items: center;
 }
 
-.footer {
+.page-title p {
+    font-weight: bold;
+    font-size: 1.5em;
+}
+
+.api-text p {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1em;
+}
+
+.api-table {
+    border-collapse: collapse;
     text-align: center;
-    padding: 10px;
-    font-size: 0.7em;
-    color: #888;
+    vertical-align: middle;
+    font-size: 0.9em;
+}
+
+.footer, .header {
+    text-align: center;
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.footer hr {
+.footer {
+    font-size: 0.7em;
+    color: #888;
+}
+
+.footer hr, .header hr {
     width: 100%;
-    margin-bottom: 10px;
 }
 
 h1 {
     margin-bottom: 10px;
     font-size: 2.5em;
 }
+
 p {
     margin-bottom: 30px;
     font-size: 1.2em;
     text-align: center;
     max-width: 600px;
 }
+
 a {
     display: inline-block;
-    margin: 10px;
     padding: 12px 24px;
     border-radius: 8px;
     font-size: 1em;
+}
+
+.time-table th {
+    font-weight: normal;
+}
+
+.content-divider {
+    width: 25%;
+    margin-top: 20px;
+}
+
+.button {
+    margin: 10px;
 }

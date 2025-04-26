@@ -4,11 +4,182 @@
     <meta charset="UTF-8">
     <title>Driver Behavior Monitor</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/monitor.css') }}">
 </head>
 <body>
+    {% include 'header.html' %}
     <div class="main-content">
+        <div class="page-title">
+            <p>Driving Behavior Monitoring Page</p>
+        </div>
+        <table class="time-table" id="time-table" style="margin-bottom: 10px;">
+            <thead>
+                <tr>
+                    <th colspan="6">Start Time</th>
+                    <th colspan="6">End Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <select id="startYear" required>
+                            <option value="2017" selected>2017</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select id="startMonth" required>
+                            <option value="1" selected>1</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select id="startDay" required>
+                            <option value="1" selected>1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select id="startHour" required>
+                            <option value="8" selected>8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                            <option value="13">13</option>
+                            <option value="14">14</option>
+                            <option value="15">15</option>
+                            <option value="16">16</option>
+                            <option value="17">17</option>
+                            <option value="18">18</option>
+                            <option value="19">19</option>
+                            <option value="20">20</option>
+                            <option value="21">21</option>
+                            <option value="22">22</option>
+                            <option value="23">23</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" id="startMinute" placeholder="Minute" min="0" max="59" value="0" required>
+                    </td>
+                    <td>
+                        <input type="number" id="startSecond" placeholder="Second" min="0" max="59" value="0" required>
+                    </td>
 
+                    <td>
+                        <select id="endYear" required>
+                            <option value="2017" selected>2017</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select id="endMonth" required>
+                            <option value="1" selected>1</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select id="endDay" required>
+                            <option value="1" selected>1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select id="endHour" required>
+                            <option value="8" selected>8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                            <option value="13">13</option>
+                            <option value="14">14</option>
+                            <option value="15">15</option>
+                            <option value="16">16</option>
+                            <option value="17">17</option>
+                            <option value="18">18</option>
+                            <option value="19">19</option>
+                            <option value="20">20</option>
+                            <option value="21">21</option>
+                            <option value="22">22</option>
+                            <option value="23">23</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" id="endMinute" placeholder="Minute" min="0" max="59" value="0" required>
+                    </td>
+                    <td>
+                        <input type="number" id="endSecond" placeholder="Second" min="0" max="59" value="0" required>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+
+        <label for="monitorInterval">Interval for monitoring</label>
+        <select id="monitorInterval" required>
+            <option value="1">1 second</option>
+            <option value="5">5 seconds</option>
+            <option value="10">10 seconds</option>
+            <option value="15">15 seconds</option>
+            <option value="30" selected>30 seconds</option>
+            <option value="60">60 seconds</option>
+        </select>
+
+        <button type="button" class="button" id="start_btn">Monitoring Start</button>
+        <button type="button" class="button" id="end_btn">Monitoring End</button>
+
+        <hr class="content-divider">
+        <div class="api-text">
+            <p id="api-text">Time: </p>
+        </div>
+        <table class="api-table" id="api-table" cellpadding="10">
+            <tr id="topGrid" class="speed-table">
+                <td><div class="driverSpeed" id="driverSpeed0">0</div></td>
+                <td><div class="driverSpeed" id="driverSpeed1">0</div></td>
+                <td><div class="driverSpeed" id="driverSpeed2">0</div></td>
+                <td><div class="driverSpeed" id="driverSpeed3">0</div></td>
+                <td><div class="driverSpeed" id="driverSpeed4">0</div></td>
+            </tr>
+            <tr id="topLabels" class="speed-table">
+                <td><div class="driverLabel" id="driverLabel0">zengpeng1000000</div></td>
+                <td><div class="driverLabel" id="driverLabel1">xiexiao1000001</div></td>
+                <td><div class="driverLabel" id="driverLabel2">hanhui1000002</div></td>
+                <td><div class="driverLabel" id="driverLabel3">likun1000003</div></td>
+                <td><div class="driverLabel" id="driverLabel4">shenxian1000004</div></td>
+            </tr>
+            <tr id="bottomGrid" class="speed-table">
+                <td><div class="driverSpeed" id="driverSpeed5">0</div></td>
+                <td><div class="driverSpeed" id="driverSpeed6">0</div></td>
+                <td><div class="driverSpeed" id="driverSpeed7">0</div></td>
+                <td><div class="driverSpeed" id="driverSpeed8">0</div></td>
+                <td><div class="driverSpeed" id="driverSpeed9">0</div></td>
+            </tr>
+            <tr id="bottomLabels" class="speed-table">
+                <td><div class="driverLabel" id="driverLabel5">panxian1000005</div></td>
+                <td><div class="driverLabel" id="driverLabel6">xiezhi1000006</div></td>
+                <td><div class="driverLabel" id="driverLabel7">zouan1000007</div></td>
+                <td><div class="driverLabel" id="driverLabel8">haowei1000008</div></td>
+                <td><div class="driverLabel" id="driverLabel9">duxu1000009</div></td>
+            </tr>
+        </table>
+        <a href="/" >Back to Main Page</a>
     </div>
+
     {% include 'footer.html' %}
+
+    <script src="{{ url_for('static', filename='js/monitor.js') }}"></script>
+
 </body>
 </html>

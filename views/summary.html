@@ -6,9 +6,201 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+    {% include 'header.html' %}
     <div class="main-content">
+        <div class="page-title">
+            <p>Driving Behavior Summary Page</p>
+        </div>
+        <!-- Summary Input Fields -->
+        <table class="time-table" id="time-table">
+            <thead>
+                <tr>
+                    <th colspan="6">Start Time</th>
+                    <th colspan="6">End Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <select id="startYear" required>
+                            <option value="2017" selected>2017</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select id="startMonth" required>
+                            <option value="1" selected>1</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select id="startDay" required>
+                            <option value="1" selected>1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select id="startHour" required>
+                            <option value="8" selected>8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                            <option value="13">13</option>
+                            <option value="14">14</option>
+                            <option value="15">15</option>
+                            <option value="16">16</option>
+                            <option value="17">17</option>
+                            <option value="18">18</option>
+                            <option value="19">19</option>
+                            <option value="20">20</option>
+                            <option value="21">21</option>
+                            <option value="22">22</option>
+                            <option value="23">23</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" id="startMinute" placeholder="Minute" min="0" max="59" value="0" required>
+                    </td>
+                    <td>
+                        <input type="number" id="startSecond" placeholder="Second" min="0" max="59" value="0" required>
+                    </td>
 
+                    <td>
+                        <select id="endYear" required>
+                            <option value="2017" selected>2017</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select id="endMonth" required>
+                            <option value="1" selected>1</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select id="endDay" required>
+                            <option value="1" selected>1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select id="endHour" required>
+                            <option value="8" selected>8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                            <option value="13">13</option>
+                            <option value="14">14</option>
+                            <option value="15">15</option>
+                            <option value="16">16</option>
+                            <option value="17">17</option>
+                            <option value="18">18</option>
+                            <option value="19">19</option>
+                            <option value="20">20</option>
+                            <option value="21">21</option>
+                            <option value="22">22</option>
+                            <option value="23">23</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" id="endMinute" placeholder="Minute" min="0" max="59" value="0" required>
+                    </td>
+                    <td>
+                        <input type="number" id="endSecond" placeholder="Second" min="0" max="59" value="0" required>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div style="margin-top:20px; margin-bottom:20px;">
+            <label for="driverID">Select Driver:</label><br>
+            <select id="driverID" name="driverID" required>
+                <option value="zengpeng1000000" selected>zengpeng1000000</option>
+                <option value="xiexiao1000001">xiexiao1000001</option>
+                <option value="hanhui1000002">hanhui1000002</option>
+                <option value="likun1000003">likun1000003</option>
+                <option value="shenxian1000004">shenxian1000004</option>
+                <option value="panxian1000005">panxian1000005</option>
+                <option value="xiezhi1000006">xiezhi1000006</option>
+                <option value="zouan1000007">zouan1000007</option>
+                <option value="haowei1000008">haowei1000008</option>
+                <option value="duxu1000009">duxu1000009</option>
+            </select>
+        </div>
+
+        <button type="button" id="submit_btn">Get Summary</button>
+        <hr class="content-divider">
+        <!-- Summary Result Table -->
+        <div class="api-text">
+            <p id="api-text">Showing result for: </p>
+        </div>
+        <div class="api-result" id="api-result">
+            <table class="api-table" id="api-table" border="1px" cellpadding="6">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Count / Duration</th>
+                    </tr>
+                </thead>
+                <tbody id="summary-body">
+                     <tr>
+                        <td>Rapid Speedup</td>
+                        <td id="isRapidlySpeedup">0</td>
+                    </tr>
+                    <tr>
+                        <td>Rapid SlowDown</td>
+                        <td id="isRapidlySlowDown">0</td>
+                    </tr>
+                    <tr>
+                        <td>Neutral Slide</td>
+                        <td id="isNeutralSlideFinished">0</td>
+                    </tr>
+                    <tr>
+                        <td>Neutral Slide Duration</td>
+                        <td id="neutralSlideDuration">0:00</td>
+                    </tr>
+                    <tr>
+                        <td>Overspeed </td>
+                        <td id="isOverspeedFinished">0</td>
+                    </tr>
+                    <tr>
+                        <td>Overspeed Duration</td>
+                        <td id="overspeedDuration">0:00</td>
+                    </tr>
+                    <tr>
+                        <td>Fatigue Driving</td>
+                        <td id="isFatigueDriving">0</td>
+                    </tr>
+                    <tr>
+                        <td>Hard Throttle Stop</td>
+                        <td id="isHthrottleStop">0</td>
+                    </tr>
+                    <tr>
+                        <td>Oil Leak</td>
+                        <td id="isOilLeak">0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <a href="/" >Back to Main Page</a>
     </div>
+
     {% include 'footer.html' %}
+
+    <script src="{{ url_for('static', filename='js/summary.js') }}"></script>
+
 </body>
 </html>

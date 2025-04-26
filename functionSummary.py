@@ -1,4 +1,5 @@
 from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType, StructField, StringType
 from pyspark.sql.functions import col, to_timestamp, lit, sum as spark_sum
 from datetime import datetime, timedelta
 import os
@@ -6,6 +7,29 @@ import os
 spark = SparkSession.builder \
     .appName("Driver Summary") \
     .getOrCreate()
+
+schema = StructType([
+    StructField("driverID", StringType(), True),
+    StructField("carPlateNumber", StringType(), True),
+    StructField("Latitute", StringType(), True),
+    StructField("Longitude", StringType(), True),
+    StructField("Speed", StringType(), True),
+    StructField("Direction", StringType(), True),
+    StructField("siteName", StringType(), True),
+    StructField("Time", StringType(), True),
+    StructField("isRapidlySpeedup", StringType(), True),
+    StructField("isRapidlySlowDown", StringType(), True),
+    StructField("isNeutralSlide", StringType(), True),
+    StructField("isNeutralSlideFinished", StringType(), True),
+    StructField("neutralSlideTime", StringType(), True),
+    StructField("isOverspeed", StringType(), True),
+    StructField("isOverspeedFinished", StringType(), True),
+    StructField("overspeedTime", StringType(), True),
+    StructField("isFatigueDriving", StringType(), True),
+    StructField("isHthrottleStop", StringType(), True),
+    StructField("isOilLeak", StringType(), True),
+    StructField("etc", StringType(), True)
+])
 
 summary_features = [
     "isRapidlySpeedup",
@@ -41,13 +65,13 @@ def load_data(driver_id, start_time, end_time):
         print("No matching files")
         return None
 
-    df = spark.read.option("header", "false").csv(files)
+    df = spark.read.option("header", "false").schema(schema).csv(files)
 
     # define the column names
     columns = [
         "driverID", "carPlateNumber", "Latitute", "Longitude", "Speed", "Direction", "siteName", "Time",
         "isRapidlySpeedup", "isRapidlySlowDown", "isNeutralSlide", "isNeutralSlideFinished", "neutralSlideTime",
-        "isOverspeed", "isOverspeedFinished", "overspeedTime", "isFatigueDriving", "isHthrottleStop", "isOilLeak"
+        "isOverspeed", "isOverspeedFinished", "overspeedTime", "isFatigueDriving", "isHthrottleStop", "isOilLeak", "etc"
     ]
 
     df = df.toDF(*columns)
