@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify
 from functionSummary import get_driver_summary
 from functionMonitor import get_simulation_data
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="views", static_folder="static")
 
 # Page: Main Page
 @app.route('/')

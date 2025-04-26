@@ -2,9 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Driver Behavior Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+    <div class="main-content">
+        <h1>Driver Behavior Analysis System</h1>
 
+        <p>This website analyze 10 drivers' past driving behavior, and monitor real-time driving speed and raise warnings when speeding.</p>
+
+        <a href="/summary">Go to Summary Page</a><br>
+        <a href="/monitor">Go to Monitoring Page</a>
+    </div>
+
+    {% include 'footer.html' %}
 </body>
 </html>
