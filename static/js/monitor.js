@@ -1,5 +1,5 @@
-var clockTimer = null;
 var monitorTimer = null;
+var startSimTime = null;
 var currentSimTime = null;
 var endSimTime = null;
 var interval = null;
@@ -24,13 +24,16 @@ document.getElementById('start_btn').addEventListener('click', function() {
     var endMinute = String(document.getElementById('endMinute').value).padStart(2, '0');
     var endSecond = String(document.getElementById('endSecond').value).padStart(2, '0');
 
+    interval = parseInt(document.getElementById('monitorInterval').value);
+
     startTime = `${startYear}-${startMonth}-${startDay} ${startHour}:${startMinute}:${startSecond}`;
     endTime = `${endYear}-${endMonth}-${endDay} ${endHour}:${endMinute}:${endSecond}`;
 
+    startSimTime = new Date(startTime)
     currentSimTime = new Date(startTime)
     endSimTime = new Date(endTime)
 
-    if (currentSimTime >= endSimTime) {
+    if (startSimTime >= endSimTime) {
         alert("Start Time must be before End Time!");
         return;
     }
@@ -41,8 +44,6 @@ document.getElementById('start_btn').addEventListener('click', function() {
     }
 
     document.getElementById('api-text').innerHTML = `Time:<br>Loading...`;
-
-    interval = parseInt(document.getElementById('monitorInterval').value);
 
     fetch('/api/monitor_start', {
         method: 'POST',
@@ -60,11 +61,12 @@ document.getElementById('start_btn').addEventListener('click', function() {
 });
 
 document.getElementById('end_btn').addEventListener('click', function() {
-    console.log("end clicked");
-    if (monitorTimer) {
-        clearInterval(monitorTimer);
-        document.getElementById('api-text').innerHTML = `Time:<br>Monitoring Interrupted.`;
-    }
+    setTimeout(function() {
+        if (monitorTimer) {
+            clearInterval(monitorTimer);
+            document.getElementById('api-text').innerHTML = `Time:<br>Monitoring Interrupted.`;
+        }
+    }, 4000);
 });
 
 function updateMonitor() {
@@ -74,17 +76,14 @@ function updateMonitor() {
         return;
     }
 
-    var queryEndTime = new Date(currentSimTime)
-    queryEndTime.setSeconds(currentSimTime.getSeconds() + interval)
-
     fetch("/api/monitor", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            "start_time": formatDateTime(currentSimTime),
-            "end_time": formatDateTime(queryEndTime)
+            "start_time": formatDateTime(startSimTime),
+            "end_time": formatDateTime(currentSimTime)
         })
     })
 
@@ -98,8 +97,6 @@ function updateMonitor() {
                 speedElement.innerText = driver.details.speed;
 
                 if (driver.details.isOverspeed === "1") {
-                    console.log(driver.details.speed);
-                    console.log(driver.driver_id);
                     driverElement.style.color = "red";
                     driverElement.style.fontWeight = "bold";
                 } else {
@@ -109,8 +106,9 @@ function updateMonitor() {
             }
         });
     });
-
-    currentSimTime.setSeconds(currentSimTime.getSeconds() + interval);
+    setTimeout(function() {
+        currentSimTime.setSeconds(currentSimTime.getSeconds() + interval);
+    }, 4000);
 }
 
 function formatDateTime(dateObj) {

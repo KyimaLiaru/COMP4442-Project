@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from functionSummary import get_driver_summary
-from functionMonitor import df, load_data, get_monitor_data
+from functionMonitor import df, reset_driver_status, load_data, get_monitor_data
 
 app = Flask(__name__, template_folder="views", static_folder="static")
 
@@ -17,7 +17,6 @@ def summary():
 # API: Get summary of driving behavior within a given period for a driver
 @app.route('/api/summary', methods=['POST'])
 def summary_api():
-    print("summary api called")
     data = request.get_json()
     driver_id = data.get('driverID')
     start_time = data.get('start_time')
@@ -35,21 +34,24 @@ def monitor_start_call():
     data = request.get_json()
     start_time = data.get('start_time')
 
-    load_data(start_time)
+    # Reset speed dictionary for drivers
+    reset_driver_status()
 
     return jsonify({"status": "Data loaded"})
 
 # API: Get simulation data for monitoring
 @app.route('/api/monitor', methods=['POST'])
 def monitor_api():
-    print("monitor api called")
     data = request.get_json()
     start_time = data.get('start_time')
     end_time = data.get('end_time')
-    print("Start = " + start_time)
-    print("End = " + end_time)
+
+    # Check whether cache can be used
     cache_df = load_data(start_time)
+
+    # Start monitoring
     result = get_monitor_data(start_time, end_time, cache_df)
+
     return jsonify(result)
 
 if __name__ == '__main__':

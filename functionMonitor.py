@@ -4,13 +4,17 @@ from pyspark.sql.functions import col, to_timestamp, lit, max as spark_max
 from datetime import datetime, timedelta
 import os
 
+# Global cache variables
 df = None
 df_date = None
+driver_states = []
 
+# Initialize Spark Session
 spark = SparkSession.builder \
     .appName("Driver Monitor") \
     .getOrCreate()
 
+# Define columns to expect from dataset files
 schema = StructType([
     StructField("driverID", StringType(), True),
     StructField("carPlateNumber", StringType(), True),
@@ -40,8 +44,25 @@ driver_ids = [
     "panxian1000005", "xiezhi1000006", "zouan1000007", "haowei1000008", "duxu1000009"
 ]
 
-# Load all data for a given day
+# Initialize the speed dictionary for all drivers
+for driver_id in driver_ids:
+    driver_states.append({
+        "driverID": driver_id,
+        "details": {
+            "speed": "0",
+            "isOverspeed": ""
+        }
+    })
+
+# Reset the speed dictionary for all drivers
+def reset_driver_status():
+    for idx, driver_id in enumerate(driver_ids):
+        driver_states[idx]["details"]["speed"] = "0"
+        driver_states[idx]["details"]["isOverspeed"] = ""
+
+# Check cache and load all data for a given day
 def load_data(start_time):
+    # load the cached dataset file
     global df
     global df_date
 
@@ -51,8 +72,7 @@ def load_data(start_time):
     file_name = date + timedelta(days=1)
 
     if df is None or df_date != file_name.date():
-        print("Loading new dataset file.  .. ")
-        # set the target data file name and path, then load the data file
+        # set the target dataset file name and path, then load the dataset file
         target_file = file_name.strftime("detail_record_%Y_%m_%d_08_00_00")
         folder_path = "./detail-records/"
         target_file_path = os.path.join(folder_path, target_file)
@@ -69,6 +89,7 @@ def load_data(start_time):
         df = df.toDF(*columns)
         df = df.withColumn("Time", to_timestamp("Time", "yyyy-MM-dd HH:mm:ss"))
 
+        # check variable for caching
         df_date = file_name.date()
 
     return df
@@ -80,32 +101,23 @@ def get_monitor_data(start_time, end_time, df):
         (col("Time") <= to_timestamp(lit(end_time)))
     )
 
-    # a dictionary variable for return
-    results = []
-
-    # fetch the latest record of each driver within the given period of time
-    for driver_id in driver_ids:
+    # update "speed" and "isOverspeed" for each driver
+    for idx, driver_id in enumerate(driver_ids):
+        # filter dataset by driverID and sort them in ascending order
         driver_df = df_filtered.filter(col("driverID") == driver_id)
+        sorted_df = driver_df.orderBy(col("Time").asc())
+        rows = sorted_df.select("Time", "Speed", "isOverspeed", "isOverspeedFinished").collect()
 
-        latest_row = driver_df.orderBy(col("Time").desc()).select("Speed", "isOverspeed").limit(1).first()
+        # process data in order
+        for row in rows:
+            # if driver starts overspeeding
+            if row["isOverspeed"] == "1":
+                driver_states[idx]["details"]["isOverspeed"] = "1"
+            # if driver stops overspeeding
+            if row["isOverspeedFinished"] == "1":
+                driver_states[idx]["details"]["isOverspeed"] = ""
 
-        # add an empty record if the driver has not departed yet.
-        if latest_row is None:
-            results.append({
-                "driverID": driver_id,
-                "details": {
-                    "speed": "0",
-                    "isOverspeed": ""
-                }
-            })
-        # add the latest record if the driver has already departed.
-        else:
-            results.append({
-                "driverID": driver_id,
-                "details": {
-                    "speed": latest_row["Speed"],
-                    "isOverspeed": latest_row["isOverspeed"] or ""
-                }
-            })
+            # always keep the latest speed
+            driver_states[idx]["details"]["speed"] = row["Speed"]
 
-    return results
+    return driver_states

@@ -61,10 +61,6 @@ def load_data(driver_id, start_time, end_time):
     folder_path = "./detail-records/"
     files = [os.path.join(folder_path, f) for f in os.listdir(folder_path) if f in target_dataset]
 
-    if not files:
-        print("No matching files")
-        return None
-
     df = spark.read.option("header", "false").schema(schema).csv(files)
 
     # define the column names
